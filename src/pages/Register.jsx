@@ -1,13 +1,14 @@
 import axios from "axios";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { server } from "../main";
+import { useContext, useState } from "react";
+import { Link, Navigate } from "react-router-dom";
+import { Context, server } from "../main";
 import { toast } from "react-hot-toast";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { isAuthenticated, setIsAuthenticated } = useContext(Context);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -28,11 +29,15 @@ const Register = () => {
         }
       );
       toast.success(data.message);
+      setIsAuthenticated(true);
     } catch (error) {
-      toast.error("some error");
+      toast.error(error.response.data.message);
       console.error(error);
+      setIsAuthenticated(false);
     }
   };
+
+  if (isAuthenticated) return <Navigate to={"/"} />;
 
   return (
     <div className="login">
